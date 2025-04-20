@@ -3,19 +3,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#202020',
-    //justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
   },
   logo: {
     width: 200,
     height: 200,
-    // shadowColor: '#adff2f',
-    // shadowOffset: { width: 0, height: 5 },
-    // shadowOpacity: 0.3,
-    // shadowRadius: 10,
-    // elevation: 10, // Android
-    // borderRadius: 20,
   },
   title: {
     fontSize: 28,

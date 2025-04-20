@@ -3,7 +3,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#202020',
-    //justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
   },
@@ -11,12 +10,6 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     marginBottom: 10,
-    // shadowColor: '#adff2f',
-    // shadowOffset: { width: 0, height: 5 },
-    // shadowOpacity: 0.3,
-    // shadowRadius: 10,
-    // elevation: 10, // Android
-    // borderRadius: 20,
   },
   input: {
     width: '100%',

@@ -2,6 +2,7 @@
   "expo": {
     "name": "money-track",
     "slug": "money-track",
+    "owner": "glitchcore-money-track",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,6 +24,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c87b1561-0bcc-4edd-8d3e-1722aca2cf89"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/c87b1561-0bcc-4edd-8d3e-1722aca2cf89"
     }
   }
 }
