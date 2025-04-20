@@ -62,6 +62,12 @@ const styles = StyleSheet.create({
     color: 'red',
     marginLeft: 10,
   },
+  totalText: {
+    color: '#adff2f',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12
+  },
   empty: {
     textAlign: 'center',
     marginTop: 30,

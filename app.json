@@ -35,6 +35,9 @@
     },
     "updates": {
       "url": "https://u.expo.dev/c87b1561-0bcc-4edd-8d3e-1722aca2cf89"
-    }
+    },
+    "plugins": [
+      "expo-sqlite"
+    ]
   }
 }
