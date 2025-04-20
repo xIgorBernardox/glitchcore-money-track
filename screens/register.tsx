@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import styles from "../styles/registerStyle";
 import { RootStackParamList } from "../types/navigationTypes";
-//import RegisterSuccessAnimation from "../components/RegisterSuccessAnimation";
+import RegisterSuccessAnimation from "../components/RegisterSuccessAnimation";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "register">;
 
@@ -15,19 +15,19 @@ const RegisterScreen = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  //const [showAnimation, setShowAnimation] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
   const handleRegister = () => {
     console.log("Usuário registrado:", { fullName, email, phone });
-    // setShowAnimation(true);
+    setShowAnimation(true);
   };
 
-  // if (showAnimation) {
-  //   return <RegisterSuccessAnimation />;
-  // }
+  if (showAnimation) {
+    return <RegisterSuccessAnimation />;
+  }
 
   return (
     <View style={styles.container}>
