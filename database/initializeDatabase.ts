@@ -17,9 +17,18 @@ export async function initializeDatabase() {
       primaryListId INTEGER,
       FOREIGN KEY (primaryListId) REFERENCES primaryList(id)
     );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      email TEXT NOT NULL UNIQUE,
+      phone TEXT NOT NULL,
+      password TEXT NOT NULL
+    );
   `);
-  const tablesToCheck = ['primaryList', 'secondaryList'];
-  
+
+  const tablesToCheck = ['primaryList', 'secondaryList', 'users'];
+
   for (const table of tablesToCheck) {
     const result = await database.getAllAsync(
       `PRAGMA table_info(${table});`
@@ -36,4 +45,5 @@ export async function initializeDatabase() {
       console.log(`Coluna "position" adicionada em ${table}`);
     }
   }
+  console.log('Banco de dados inicializado com sucesso!');
 }
