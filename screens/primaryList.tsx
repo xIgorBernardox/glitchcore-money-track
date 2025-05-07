@@ -17,6 +17,7 @@ type ListItem = {
   id: string;
   name: string;
   position: number;
+  total?: number;
 };
 
 const PrimaryList = () => {
@@ -49,14 +50,20 @@ const PrimaryList = () => {
 
   const loadLists = async (database: SQLiteDatabase) => {
     try {
-      const rows = await database.getAllAsync(
-        "SELECT id, name, position FROM primaryList ORDER BY position ASC"
-      );
+      const rows = await database.getAllAsync(`
+        SELECT p.id, p.name, p.position, 
+          (SELECT SUM(s.price) FROM secondaryList s WHERE s.primaryListId = p.id) AS total
+        FROM primaryList p
+        ORDER BY p.position ASC
+      `);
+
       const data = (rows as any[]).map((item) => ({
         id: item.id.toString(),
         name: item.name,
         position: item.position ?? 0,
+        total: item.total ?? 0,
       }));
+
       setLists(data);
     } catch (err) {
       console.error("Erro ao buscar listas:", err);
@@ -72,7 +79,7 @@ const PrimaryList = () => {
         FROM secondaryList s
         INNER JOIN primaryList p ON s.primaryListId = p.id
       `);
-  
+
       const totalGastoCalculado = (rows[0] as TotalResponse).total ?? 0;
       setTotalGasto(totalGastoCalculado);
     } catch (err) {
@@ -115,23 +122,36 @@ const PrimaryList = () => {
 
   const handleDeleteList = async (id: string) => {
     if (!db) return;
-    try {
-      // Deleta todos os itens relacionados a essa lista
-      await db.runAsync("DELETE FROM secondaryList WHERE primaryListId = ?", [id]);
   
-      // Deleta a lista principal
-      await db.runAsync("DELETE FROM primaryList WHERE id = ?", [id]);
+    Alert.alert(
+      "Confirmação",
+      "Tem certeza que deseja apagar?",
+      [
+        {
+          text: "Não",
+          style: "cancel",
+        },
+        {
+          text: "Sim",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await db.runAsync("DELETE FROM secondaryList WHERE primaryListId = ?", [id]);
+              await db.runAsync("DELETE FROM primaryList WHERE id = ?", [id]);
   
-      // Atualiza a UI
-      const updatedLists = lists.filter((item) => item.id !== id);
-      setLists(updatedLists);
+              const updatedLists = lists.filter((item) => item.id !== id);
+              setLists(updatedLists);
   
-      // Recalcula o total
-      await calcularTotalGeral(db);
-    } catch (error) {
-      console.error("Erro ao deletar lista:", error);
-    }
-  };
+              await calcularTotalGeral(db);
+            } catch (error) {
+              console.error("Erro ao deletar lista:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };  
 
   const updateListOrderInDB = async (data: ListItem[]) => {
     if (!db) return;
@@ -171,7 +191,12 @@ const PrimaryList = () => {
           navigation.navigate("secondaryList", { listId: item.id })
         }
       >
-        <Text style={styles.itemText}>{item.name}</Text>
+        <View>
+          <Text style={styles.itemText}>{item.name}</Text>
+          <Text style={{ color: "#000", fontSize: 12 }}>
+            Total: R${item.total?.toFixed(2) ?? "0.00"}
+          </Text>
+        </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handleDeleteList(item.id)}>
         <Ionicons name="trash-bin" size={24} color="#ff0000" />

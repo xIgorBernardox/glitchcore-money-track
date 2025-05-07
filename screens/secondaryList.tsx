@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert
 } from "react-native";
 import DraggableFlatList, {
   RenderItemParams,
@@ -141,6 +142,25 @@ const SecondaryList = ({ route }: { route: any }) => {
     }
   };
 
+  const confirmDelete = (id: string) => {
+    Alert.alert(
+      "Confirmar exclusão",
+      "Tem certeza que deseja apagar este item?",
+      [
+        {
+          text: "Não",
+          style: "cancel",
+        },
+        {
+          text: "Sim",
+          onPress: () => removeItem(id),
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const renderItem = ({ item, drag, isActive }: RenderItemParams<Item>) => (
     <TouchableOpacity
       style={[
@@ -160,7 +180,7 @@ const SecondaryList = ({ route }: { route: any }) => {
         <Text style={styles.itemText}>{item.description}</Text>
         <Text style={styles.itemPrice}>R${item.price.toFixed(2)}</Text>
       </View>
-      <TouchableOpacity onPress={() => removeItem(item.id)}>
+      <TouchableOpacity onPress={() => confirmDelete(item.id)}>
         <Ionicons name="trash-bin" size={24} color="#ff0000" />
       </TouchableOpacity>
     </TouchableOpacity>
