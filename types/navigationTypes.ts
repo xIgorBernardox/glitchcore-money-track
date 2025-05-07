@@ -1,7 +1,7 @@
 export type RootStackParamList = {
-  login: undefined; // ou 'phoneNumber: string', se você precisar passar dados
-  register: undefined;
-  'Minhas Listas': undefined;
-  'secondaryList': { listId: string };
-  // Adicione mais rotas aqui conforme necessário
+  login: undefined; // Tela de login
+  register: undefined; // Tela de registro
+  'Minhas Listas': undefined; // Tela das listas
+  'secondaryList': { listId: string }; // Tela de lista secundária com o parâmetro 'listId'
+  // Adicione mais rotas conforme necessário
 };

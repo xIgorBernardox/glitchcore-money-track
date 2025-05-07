@@ -2,9 +2,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import RegisterSuccessAnimation from "../components/RegisterSuccessAnimation";
 import styles from "../styles/registerStyle";
 import { RootStackParamList } from "../types/navigationTypes";
-import RegisterSuccessAnimation from "../components/RegisterSuccessAnimation";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "register">;
 
@@ -32,7 +32,7 @@ const RegisterScreen = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../assets/money-track-logo-2.png")}
+        source={require("../assets/logo-login.png")}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -111,7 +111,10 @@ const RegisterScreen = () => {
             >
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button,{ flex: 1 }]} onPress={handleRegister}>
+            <TouchableOpacity
+              style={[styles.button, { flex: 1 }]}
+              onPress={handleRegister}
+            >
               <Text style={styles.buttonText}>Registrar-se</Text>
             </TouchableOpacity>
           </View>
@@ -123,6 +126,14 @@ const RegisterScreen = () => {
           Já tem uma conta? <Text style={styles.linkText}>Faça login</Text>
         </Text>
       </TouchableOpacity>
+
+      <View>
+        <Image
+          source={require("../assets/powered-glitchcore.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </View>
     </View>
   );
 };

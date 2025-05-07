@@ -41,6 +41,14 @@ const styles = StyleSheet.create({
   removeIcon: {
     marginLeft: 12,
   },
+
+  itemContent: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -56,7 +64,7 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     color: '#adff2f',
-    marginLeft: 10,
+    marginRight: 16,
   },
   deleteText: {
     marginLeft: 10,
