@@ -7,7 +7,9 @@ export async function initializeDatabase() {
   await database.execAsync(`
     CREATE TABLE IF NOT EXISTS primaryList (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL
+      name TEXT NOT NULL,
+      userId INTEGER,
+      FOREIGN KEY (userId) REFERENCES users(id)
     );
 
     CREATE TABLE IF NOT EXISTS secondaryList (

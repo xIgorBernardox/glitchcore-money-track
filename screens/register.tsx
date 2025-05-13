@@ -1,11 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import RegisterSuccessAnimation from "../components/RegisterSuccessAnimation";
 import { getDatabase } from "../database/db";
 import styles from "../styles/registerStyle";
 import { RootStackParamList } from "../types/navigationTypes";
-import RegisterSuccessAnimation from "../components/RegisterSuccessAnimation";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "register">;
 
@@ -29,21 +29,26 @@ const RegisterScreen = () => {
       }
 
       const db = await getDatabase();
+      console.log({ db });
       // Verificar se o nome de usuário já está cadastrado
       const usernameExists = await db.getAllAsync(
         "SELECT * FROM users WHERE username = ?",
         [username]
       );
-
+      console.log({ usernameExists });
       if (usernameExists.length > 0) {
         Alert.alert("Erro", "Esse nome de usuário já está em uso.");
         return;
       }
+      setStep(2);
     }
 
     if (step === 2) {
       if (!email.trim() || !confirmEmail.trim()) {
-        Alert.alert("Erro", "Os campos de e-mail e confirmação são obrigatórios.");
+        Alert.alert(
+          "Erro",
+          "Os campos de e-mail e confirmação são obrigatórios."
+        );
         return;
       }
       if (email !== confirmEmail) {
@@ -62,6 +67,7 @@ const RegisterScreen = () => {
         Alert.alert("Erro", "Esse e-mail já está em uso.");
         return;
       }
+      setStep(3);
     }
 
     if (step === 3) {
@@ -73,17 +79,19 @@ const RegisterScreen = () => {
         Alert.alert("Erro", "As senhas não coincidem.");
         return;
       }
+      setStep(4);
     }
 
-    if (step === 4 && !phone.trim()) {
-      Alert.alert("Erro", "O número de celular é obrigatório.");
-      return;
+    if (step === 4) {
+      if (!phone.trim()) {
+        Alert.alert("Erro", "O número de celular é obrigatório.");
+        return;
+      }
+      setStep((prev) => prev + 1);
     }
-
-    setStep(prev => prev + 1);
   };
 
-  const prevStep = () => setStep(prev => prev - 1);
+  const prevStep = () => setStep((prev) => prev - 1);
 
   const handleRegister = async () => {
     try {
@@ -146,7 +154,9 @@ const RegisterScreen = () => {
             value={confirmEmail}
             onChangeText={setConfirmEmail}
           />
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             <TouchableOpacity style={styles.button} onPress={prevStep}>
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
@@ -175,7 +185,9 @@ const RegisterScreen = () => {
             value={confirmPassword}
             onChangeText={setConfirmPassword}
           />
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             <TouchableOpacity style={styles.button} onPress={prevStep}>
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
@@ -196,7 +208,9 @@ const RegisterScreen = () => {
             value={phone}
             onChangeText={setPhone}
           />
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             <TouchableOpacity style={styles.button} onPress={prevStep}>
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>

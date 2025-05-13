@@ -7,27 +7,60 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Alert
 } from 'react-native';
 import styles from '../styles/loginStyle';
 import { RootStackParamList } from "../types/navigationTypes";
+import { getDatabase } from "../database/db";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
 const LoginScreen = () => {
   const navigation = useNavigation<NavigationProps>();
-  const [step, setStep] = useState<'phone' | 'code'>('phone');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [code, setCode] = useState('');
+  const [step, setStep] = useState<'username' | 'password'>('username');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleNext = () => {
-    if (step === 'phone') {
-      // Aqui você poderia enviar o código via SMS
-      if (phoneNumber.trim() === '') return;
-      setStep('code');
+  const handleNext = async () => {
+    if (step === 'username') {
+      if (username.trim() === '') {
+        Alert.alert('Erro', 'Nome de usuário é obrigatório.');
+        return;
+      }
+
+      const db = await getDatabase();
+      // Verificar se o nome de usuário existe no banco de dados
+      const userExists = await db.getAllAsync(
+        "SELECT * FROM users WHERE username = ?",
+        [username]
+      );
+
+      if (userExists.length === 0) {
+        Alert.alert('Erro', 'Usuário incorreto.');
+        return;
+      }
+
+      setStep('password');
     } else {
-      // Verificar código (simulado aqui)
-      if (code.trim() === '') return;
+      if (password.trim() === '') {
+        Alert.alert('Erro', 'Senha é obrigatória.');
+        return;
+      }
+
+      const db = await getDatabase();
+      // Verificar se a senha está correta
+      const user = await db.getAllAsync(
+        "SELECT * FROM users WHERE username = ? AND password = ?",
+        [username, password]
+      );
+
+      if (user.length === 0) {
+        Alert.alert('Erro', 'Senha incorreta.');
+        return;
+      }
+
+      // Senha correta, fazer login
       navigation.navigate('Minhas Listas'); // ou 'PrimaryList' dependendo da rota
     }
   };
@@ -46,20 +79,20 @@ const LoginScreen = () => {
       <TextInput
         style={styles.input}
         placeholder={
-          step === 'phone'
-            ? 'Digite seu número de celular'
-            : 'Digite o código que você recebeu'
+          step === 'username'
+            ? 'Digite seu nome de usuário'
+            : 'Digite sua senha'
         }
         placeholderTextColor="#adff2f"
-        value={step === 'phone' ? phoneNumber : code}
-        onChangeText={step === 'phone' ? setPhoneNumber : setCode}
-        keyboardType={step === 'phone' ? 'phone-pad' : 'number-pad'}
+        value={step === 'username' ? username : password}
+        onChangeText={step === 'username' ? setUsername : setPassword}
+        secureTextEntry={step === 'password'}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleNext}>
         <View style={styles.buttonContent}>
           <Text style={styles.buttonText}>
-            {step === 'phone' ? 'Entrar' : 'Enviar Código'}
+            {step === 'username' ? 'Próximo' : 'Entrar'}
           </Text>
           <SimpleLineIcons name="login" size={18} color="#000" style={{ marginLeft: 8 }} />
         </View>
@@ -68,6 +101,7 @@ const LoginScreen = () => {
       <TouchableOpacity onPress={goToRegister}>
         <Text style={styles.registerText}>Não tem conta? Registre-se</Text>
       </TouchableOpacity>
+
       <View>
         <Image
           source={require('../assets/powered-glitchcore.png')}
@@ -78,4 +112,5 @@ const LoginScreen = () => {
     </View>
   );
 };
+
 export default LoginScreen;
