@@ -29,13 +29,20 @@ const RegisterScreen = () => {
       }
 
       const db = await getDatabase();
-      console.log({ db });
+      console.log({ dbakey: db });
+      console.log({ username });
+      
       // Verificar se o nome de usuário já está cadastrado
-      const usernameExists = await db.getAllAsync(
+      let usernameExists = [];
+      try {
+      usernameExists = await db.getAllAsync(
         "SELECT * FROM users WHERE username = ?",
         [username]
       );
       console.log({ usernameExists });
+    } catch (error: any) {
+      console.log(error.message);
+     }
       if (usernameExists.length > 0) {
         Alert.alert("Erro", "Esse nome de usuário já está em uso.");
         return;

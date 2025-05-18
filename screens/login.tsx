@@ -66,9 +66,10 @@ const LoginScreen = () => {
   };
 
   const goToRegister = () => {
+    // navigation.navigate('Minhas Listas');
     navigation.navigate('register');
   };
-
+  
   return (
     <View style={styles.container}>
       <Image
@@ -100,6 +101,10 @@ const LoginScreen = () => {
 
       <TouchableOpacity onPress={goToRegister}>
         <Text style={styles.registerText}>Não tem conta? Registre-se</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('tabelas')}>
+        <Text style={styles.registerText}>ver tabelas</Text>
       </TouchableOpacity>
 
       <View>

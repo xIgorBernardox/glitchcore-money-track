@@ -2,20 +2,19 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { SQLiteDatabase } from 'expo-sqlite';
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Alert
 } from "react-native";
 import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { getDatabase } from "../database/db";
-import { initializeDatabase } from "../database/initializeDatabase";
 import styles from "../styles/secondaryListStyle";
 
 type Item = {
@@ -40,7 +39,6 @@ const SecondaryList = ({ route }: { route: any }) => {
     const setup = async () => {
       const database = await getDatabase();
       setDb(database);
-      await initializeDatabase();
       await checkPositionColumn(database); // Verifica coluna position
       if (listId) {
         loadItems(database);

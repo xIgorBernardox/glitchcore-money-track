@@ -9,7 +9,6 @@ import DraggableFlatList, {
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { getDatabase } from "../database/db";
-import { initializeDatabase } from "../database/initializeDatabase";
 import styles from "../styles/primaryListStyle";
 import { RootStackParamList } from "../types/navigationTypes";
 
@@ -32,7 +31,6 @@ const PrimaryList = () => {
     const setup = async () => {
       const database = await getDatabase();
       setDb(database);
-      await initializeDatabase();
       loadLists(database);
       calcularTotalGeral(database);
     };
@@ -122,7 +120,7 @@ const PrimaryList = () => {
 
   const handleDeleteList = async (id: string) => {
     if (!db) return;
-  
+
     Alert.alert(
       "Confirmação",
       "Tem certeza que deseja apagar?",
@@ -136,12 +134,15 @@ const PrimaryList = () => {
           style: "destructive",
           onPress: async () => {
             try {
-              await db.runAsync("DELETE FROM secondaryList WHERE primaryListId = ?", [id]);
+              await db.runAsync(
+                "DELETE FROM secondaryList WHERE primaryListId = ?",
+                [id]
+              );
               await db.runAsync("DELETE FROM primaryList WHERE id = ?", [id]);
-  
+
               const updatedLists = lists.filter((item) => item.id !== id);
               setLists(updatedLists);
-  
+
               await calcularTotalGeral(db);
             } catch (error) {
               console.error("Erro ao deletar lista:", error);
@@ -151,7 +152,7 @@ const PrimaryList = () => {
       ],
       { cancelable: true }
     );
-  };  
+  };
 
   const updateListOrderInDB = async (data: ListItem[]) => {
     if (!db) return;
