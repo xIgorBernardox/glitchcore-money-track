@@ -31,18 +31,18 @@ const RegisterScreen = () => {
       const db = await getDatabase();
       console.log({ dbakey: db });
       console.log({ username });
-      
+
       // Verificar se o nome de usuário já está cadastrado
       let usernameExists = [];
       try {
-      usernameExists = await db.getAllAsync(
-        "SELECT * FROM users WHERE username = ?",
-        [username]
-      );
-      console.log({ usernameExists });
-    } catch (error: any) {
-      console.log(error.message);
-     }
+        usernameExists = await db.getAllAsync(
+          "SELECT * FROM users WHERE username = ?",
+          [username]
+        );
+        console.log({ usernameExists });
+      } catch (error: any) {
+        console.log(error.message);
+      }
       if (usernameExists.length > 0) {
         Alert.alert("Erro", "Esse nome de usuário já está em uso.");
         return;
@@ -67,7 +67,7 @@ const RegisterScreen = () => {
       // Verificar se o e-mail já está cadastrado
       const emailExists = await db.getAllAsync(
         "SELECT * FROM users WHERE email = ?",
-        [email]
+        [email.toLowerCase()]
       );
 
       if (emailExists.length > 0) {
@@ -107,7 +107,7 @@ const RegisterScreen = () => {
       // Inserir o usuário no banco de dados
       await db.runAsync(
         "INSERT INTO users (username, email, password, phone) VALUES (?, ?, ?, ?)",
-        [username, email, password, phone]
+        [username, email.toLowerCase(), password, phone]
       );
 
       setShowAnimation(true);
@@ -152,6 +152,7 @@ const RegisterScreen = () => {
             keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
+            textContentType="emailAddress"
           />
           <TextInput
             style={styles.input}
@@ -160,6 +161,7 @@ const RegisterScreen = () => {
             keyboardType="email-address"
             value={confirmEmail}
             onChangeText={setConfirmEmail}
+            textContentType="emailAddress"
           />
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
