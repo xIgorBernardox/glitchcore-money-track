@@ -29,7 +29,7 @@ export async function initializeDatabase() {
     );
   `);
 
-  const tablesToCheck = ['primaryList', 'secondaryList', 'users'];
+const tablesToCheck = ['primaryList', 'secondaryList', 'users'];
 
   for (const table of tablesToCheck) {
     const result = await database.getAllAsync(

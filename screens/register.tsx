@@ -112,7 +112,7 @@ const RegisterScreen = () => {
 
       setShowAnimation(true);
       setTimeout(() => {
-        navigation.navigate("login");
+        navigation.goBack();
       }, 3000);
     } catch (err) {
       console.error("Erro ao registrar usuário", err);

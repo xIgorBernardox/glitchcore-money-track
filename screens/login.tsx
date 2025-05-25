@@ -1,31 +1,32 @@
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useState } from "react";
 import {
+  Alert,
   Image,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Alert
-} from 'react-native';
-import styles from '../styles/loginStyle';
-import { RootStackParamList } from "../types/navigationTypes";
+} from "react-native";
 import { getDatabase } from "../database/db";
+import styles from "../styles/loginStyle";
+import { RootStackParamList } from "../types/navigationTypes";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
 const LoginScreen = () => {
   const navigation = useNavigation<NavigationProps>();
-  const [step, setStep] = useState<'username' | 'password'>('username');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [step, setStep] = useState<"username" | "password">("username");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleNext = async () => {
-    if (step === 'username') {
-      if (username.trim() === '') {
-        Alert.alert('Erro', 'Nome de usuário é obrigatório.');
+    if (step === "username") {
+      if (username.trim() === "") {
+        Alert.alert("Erro", "Nome de usuário é obrigatório.");
         return;
       }
 
@@ -37,65 +38,82 @@ const LoginScreen = () => {
       );
 
       if (userExists.length === 0) {
-        Alert.alert('Erro', 'Usuário incorreto.');
+        Alert.alert("Erro", "Usuário incorreto.");
         return;
       }
 
-      setStep('password');
+      setStep("password");
     } else {
-      if (password.trim() === '') {
-        Alert.alert('Erro', 'Senha é obrigatória.');
+      if (password.trim() === "") {
+        Alert.alert("Erro", "Senha é obrigatória.");
         return;
       }
 
       const db = await getDatabase();
-      // Verificar se a senha está correta
+      // Verificar se user e a senha está correta
       const user = await db.getAllAsync(
         "SELECT * FROM users WHERE username = ? AND password = ?",
         [username, password]
       );
 
       if (user.length === 0) {
-        Alert.alert('Erro', 'Senha incorreta.');
+        Alert.alert("Erro", "Usuário ou senha inválido.");
         return;
       }
 
+      const storeData = async (user: any) => {
+        try {
+          const jsonValue = JSON.stringify(user);
+          await AsyncStorage.setItem("user", jsonValue);
+          const userData = await AsyncStorage.getItem("user");
+          console.log({ AsyncStorage: JSON.parse(userData!) });
+        } catch (e) {
+          // saving error
+        }
+      };
+      storeData(user);
+
       // Senha correta, fazer login
-      navigation.navigate('Minhas Listas'); // ou 'PrimaryList' dependendo da rota
+      navigation.replace("myLists"); // ou 'PrimaryList' dependendo da rota
     }
   };
 
   const goToRegister = () => {
     // navigation.navigate('Minhas Listas');
-    navigation.navigate('register');
+    navigation.navigate("register");
   };
-  
+
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/logo-login.png')}
+        source={require("../assets/logo-login.png")}
         style={styles.logo}
         resizeMode="contain"
       />
       <TextInput
         style={styles.input}
         placeholder={
-          step === 'username'
-            ? 'Digite seu nome de usuário'
-            : 'Digite sua senha'
+          step === "username"
+            ? "Digite seu nome de usuário"
+            : "Digite sua senha"
         }
         placeholderTextColor="#adff2f"
-        value={step === 'username' ? username : password}
-        onChangeText={step === 'username' ? setUsername : setPassword}
-        secureTextEntry={step === 'password'}
+        value={step === "username" ? username : password}
+        onChangeText={step === "username" ? setUsername : setPassword}
+        secureTextEntry={step === "password"}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleNext}>
         <View style={styles.buttonContent}>
           <Text style={styles.buttonText}>
-            {step === 'username' ? 'Próximo' : 'Entrar'}
+            {step === "username" ? "Próximo" : "Entrar"}
           </Text>
-          <SimpleLineIcons name="login" size={18} color="#000" style={{ marginLeft: 8 }} />
+          <SimpleLineIcons
+            name="login"
+            size={18}
+            color="#000"
+            style={{ marginLeft: 8 }}
+          />
         </View>
       </TouchableOpacity>
 
@@ -103,13 +121,9 @@ const LoginScreen = () => {
         <Text style={styles.registerText}>Não tem conta? Registre-se</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('tabelas')}>
-        <Text style={styles.registerText}>ver tabelas</Text>
-      </TouchableOpacity>
-
       <View>
         <Image
-          source={require('../assets/powered-glitchcore.png')}
+          source={require("../assets/powered-glitchcore.png")}
           style={styles.logo}
           resizeMode="contain"
         />

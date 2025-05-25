@@ -2,19 +2,19 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { initializeDatabase } from "./database/initializeDatabase";
 import loginScreen from "./screens/login";
 import primaryListScreen from "./screens/primaryList";
 import registerScreen from "./screens/register";
 import secondaryListScreen from "./screens/secondaryList";
 import viewTableSqLite from "./screens/viewTableSqLite";
 import { RootStackParamList } from "./types/navigationTypes";
-import { initializeDatabase } from "./database/initializeDatabase";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   useEffect(() => {
-    async function load(){
+    async function load() {
       await initializeDatabase();
     }
     load();
@@ -62,10 +62,10 @@ export default function App() {
             }}
           />
           <Stack.Screen
-            name="Minhas Listas"
+            name="myLists"
             component={primaryListScreen}
             options={{
-              title: "",
+              title: "Minhas Listas",
               headerStyle: {
                 backgroundColor: "#202020",
                 elevation: 0,

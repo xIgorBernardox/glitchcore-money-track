@@ -30,6 +30,8 @@ type SecondaryListProps = {
 
 const SecondaryList = ({ route }: { route: any }) => {
   const listId = route.params?.listId;
+  console.log({ listId });
+  
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [items, setItems] = useState<Item[]>([]);

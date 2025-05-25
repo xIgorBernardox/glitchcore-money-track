@@ -1,4 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { SQLiteDatabase } from "expo-sqlite";
@@ -48,12 +50,14 @@ const PrimaryList = () => {
 
   const loadLists = async (database: SQLiteDatabase) => {
     try {
-      const rows = await database.getAllAsync(`
-        SELECT p.id, p.name, p.position, 
-          (SELECT SUM(s.price) FROM secondaryList s WHERE s.primaryListId = p.id) AS total
-        FROM primaryList p
-        ORDER BY p.position ASC
-      `);
+      const userObj = await AsyncStorage.getItem("user");
+      const [user] = JSON.parse(userObj!);
+      console.log({ user });
+
+      const rows = await database.getAllAsync(
+        "SELECT p.id, p.name, p.position, p.userId, (SELECT SUM(s.price) FROM secondaryList s WHERE s.primaryListId = p.id) AS total FROM primaryList p WHERE p.userId = ? ORDER BY p.position ASC",
+        [user.id]
+      );
 
       const data = (rows as any[]).map((item) => ({
         id: item.id.toString(),
@@ -72,13 +76,31 @@ const PrimaryList = () => {
 
   const calcularTotalGeral = async (database: SQLiteDatabase) => {
     try {
-      const rows = await database.getAllAsync(`
-        SELECT SUM(s.price) AS total
+      // const rows = await database.getAllAsync(`
+      //   SELECT (SELECT SUM(s.price) FROM secondaryList s WHERE s.primaryListId = p.id) AS total
+      //   FROM primaryList p
+      //   INNER JOIN secondaryList s ON s.primaryListId = p.id
+      // `);
+
+      const userObj = await AsyncStorage.getItem("user");
+      const [user] = JSON.parse(userObj!);
+
+      const rows = await database.getAllAsync(
+        `
+        SELECT s.price   
         FROM secondaryList s
         INNER JOIN primaryList p ON s.primaryListId = p.id
-      `);
+        WHERE p.userId = ?
+      `,
+        [user.id]
+      );
 
-      const totalGastoCalculado = (rows[0] as TotalResponse).total ?? 0;
+      console.log({ calcular: rows });
+
+      const totalGastoCalculado: any = rows.reduce(
+        (sum, item: any) => sum + item.price,
+        0
+      );
       setTotalGasto(totalGastoCalculado);
     } catch (err) {
       console.error("Erro ao calcular total geral:", err);
@@ -97,10 +119,13 @@ const PrimaryList = () => {
         maxPosition: number;
       }>("SELECT MAX(position) AS maxPosition FROM primaryList");
       const nextPosition = (lastPositionResult?.maxPosition ?? -1) + 1;
+      const userObj = await AsyncStorage.getItem("user");
+      const [user] = JSON.parse(userObj!);
+      console.log({ user });
 
       const result = await db.runAsync(
-        "INSERT INTO primaryList (name, position) VALUES (?, ?)",
-        [listName.trim(), nextPosition]
+        "INSERT INTO primaryList (userId, name, position) VALUES (?, ?, ?)",
+        [user!.id, listName.trim(), nextPosition]
       );
 
       // Atualiza o total geral após inserir a nova lista
@@ -208,6 +233,16 @@ const PrimaryList = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={async () => {
+            await AsyncStorage.clear();
+            navigation.replace("login");
+          }}
+        >
+          <SimpleLineIcons name="logout" size={24} color="black" />
+          <Text style={styles.logoutButtonText}>Sair</Text>
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="Nova lista (Ex: Mercado)"
